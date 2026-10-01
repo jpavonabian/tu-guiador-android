@@ -34,4 +34,12 @@
     <string name="descartar_mensaje">If you close now, any unsaved changes will be lost.</string>
     <string name="descartar">Discard</string>
     <string name="seguir_editando">Keep editing</string>
+    <string name="importar_archivo">Import pathways from a file</string>
+    <string name="exportar_todos">Export all pathways to a file</string>
+    <string name="exito_importar_archivo_mensaje">Pathways imported correctly.</string>
+    <string name="error_importar_archivo_mensaje">The file could not be imported. Your pathways have not been changed.</string>
+    <string name="exito_exportar_titulo">Export successful</string>
+    <string name="exito_exportar_mensaje">Pathways saved to the file.</string>
+    <string name="error_exportar_titulo">Exporting error</string>
+    <string name="error_exportar_mensaje">The file could not be saved.</string>
 </resources>

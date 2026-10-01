@@ -34,4 +34,12 @@
     <string name="descartar_mensaje">Si cierras ahora, se perderán los cambios que no hayas guardado.</string>
     <string name="descartar">Descartar</string>
     <string name="seguir_editando">Seguir editando</string>
+    <string name="importar_archivo">Importar recorridos desde un archivo</string>
+    <string name="exportar_todos">Exportar todos los recorridos a un archivo</string>
+    <string name="exito_importar_archivo_mensaje">Los recorridos se han importado correctamente.</string>
+    <string name="error_importar_archivo_mensaje">No se ha podido importar el archivo. Tus recorridos no se han modificado.</string>
+    <string name="exito_exportar_titulo">Exportación completada</string>
+    <string name="exito_exportar_mensaje">Los recorridos se han guardado en el archivo.</string>
+    <string name="error_exportar_titulo">Error al exportar</string>
+    <string name="error_exportar_mensaje">No se ha podido guardar el archivo.</string>
 </resources>
