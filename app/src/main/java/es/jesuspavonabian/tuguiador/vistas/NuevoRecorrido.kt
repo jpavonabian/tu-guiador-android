@@ -60,7 +60,8 @@ internal fun FormularioRecorrido(
 ) {
     var nombre by rememberSaveable { mutableStateOf(inicial?.nombre ?: "") }
     var descripcion by rememberSaveable { mutableStateOf(inicial?.descripcion ?: "") }
-    var pasos by rememberSaveable { mutableStateOf(ArrayList(inicial?.pasos ?: emptyList())) }
+    // Siempre se sustituye por una lista nueva (ArrayList, que Android sabe guardar al girar).
+    var pasos by rememberSaveable { mutableStateOf<List<String>>(ArrayList(inicial?.pasos ?: emptyList())) }
     var confirmarDescartar by rememberSaveable { mutableStateOf(false) }
     var pasoAEnfocar by remember { mutableStateOf<Int?>(null) }
     val botonAnadirPaso = remember { FocusRequester() }
@@ -117,7 +118,7 @@ internal fun FormularioRecorrido(
                     OutlinedTextField(
                         value = paso,
                         onValueChange = { nuevo ->
-                            pasos = ArrayList(pasos).also { it[indice] = nuevo }
+                            pasos = pasos.mapIndexed { i, anterior -> if (i == indice) nuevo else anterior }
                         },
                         label = { Text(stringResource(R.string.paso_numero, indice + 1)) },
                         modifier = Modifier
@@ -126,7 +127,7 @@ internal fun FormularioRecorrido(
                     )
                     TextButton(
                         onClick = {
-                            pasos = ArrayList(pasos).also { it.removeAt(indice) }
+                            pasos = pasos.filterIndexed { i, _ -> i != indice }
                             // El foco queda en el paso anterior, o en el siguiente si era el primero.
                             if (pasos.isEmpty()) {
                                 botonAnadirPaso.requestFocus()
@@ -142,7 +143,7 @@ internal fun FormularioRecorrido(
             }
             TextButton(
                 onClick = {
-                    pasos = ArrayList(pasos).also { it.add("") }
+                    pasos = pasos + ""
                     pasoAEnfocar = pasos.size - 1
                 },
                 modifier = Modifier.focusRequester(botonAnadirPaso),

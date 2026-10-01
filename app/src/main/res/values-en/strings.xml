@@ -21,7 +21,6 @@
     <string name="mantener_pulsado_para_opciones">Press and hold a pathway to see options</string>
     <string name="no_hay_recorridos">No pathways available.</string>
     <string name="nombre_del_recorrido">Pathway name</string>
-    <string name="paso">Step</string>
     <string name="confirmar_eliminar_recorrido">Do you wish to delete this pathway?</string>
     <string name="atras">Back</string>
     <string name="compartir">Share</string>
