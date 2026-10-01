@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
+  <!-- Primer plano del icono adaptativo: una sola tinta (blanco) sobre transparente.
+       Todo queda dentro del círculo central de 66 dp que Android nunca recorta. -->
+  <g fill="#FFFFFF">
+    <!-- Ruta que serpentea bajo el marcador -->
+    <path d="M36 76 C46 67 58 85 72 75" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+    <!-- Marcador con un agujero circular -->
+    <path fill-rule="evenodd" d="M54 66 C54 66 40 52 40 42 A14 14 0 0 1 68 42 C68 52 54 66 54 66 Z M54 37 A5 5 0 1 0 54 47 A5 5 0 1 0 54 37 Z"/>
+  </g>
+</svg>
