@@ -3,6 +3,8 @@
 
     <application
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/reglas_extraccion_datos"
+        android:fullBackupContent="@xml/reglas_copia_completa"
         android:label="@string/nombre_app"
         android:supportsRtl="true"
         android:theme="@style/Theme.TuGuiador">
