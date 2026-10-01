@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "es.jesuspavonabian.tuguiador"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "es.jesuspavonabian.tuguiador"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -26,6 +26,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    packaging {
+        jniLibs {
+            // AndroidX la trae sin quitar símbolos y no hay NDK: se empaqueta tal cual, sin el aviso.
+            keepDebugSymbols += "**/libandroidx.graphics.path.so"
+        }
     }
 
     buildFeatures {
