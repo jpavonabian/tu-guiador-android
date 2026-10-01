@@ -3,6 +3,7 @@
 
     <application
         android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
         android:dataExtractionRules="@xml/reglas_extraccion_datos"
         android:fullBackupContent="@xml/reglas_copia_completa"
         android:label="@string/nombre_app"
