@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nombre_app">Tu guiador</string>
+    <string name="aceptar">OK</string>
+    <string name="anadir_o_importar_recorrido">Add or import a pathway.</string>
+    <string name="anadir_paso">Add step</string>
+    <string name="anadir_recorrido">Add pathway</string>
+    <string name="anadir_un_recorrido">Add a pathway</string>
+    <string name="cerrar">Close</string>
+    <string name="descripcion_del_recorrido">Pathway\'s description</string>
+    <string name="editar">Edit</string>
+    <string name="error_importar_mensaje">Pathway could not be imported correctly.</string>
+    <string name="exito_importar_mensaje">Pathway imported correctly.</string>
+    <string name="eliminar">Delete</string>
+    <string name="eliminar_recorrido">Delete pathway</string>
+    <string name="error_importar_titulo">Importing error</string>
+    <string name="guardar_recorrido">Save pathway</string>
+    <string name="exito_importar_titulo">Importing successful</string>
+    <string name="importar_desde_portapapeles">Import pathway from clipboard</string>
+    <string name="listado_de_recorridos">Pathway list</string>
+    <string name="mantener_pulsado_para_opciones">Press and hold a pathway to see options</string>
+    <string name="no_hay_recorridos">No pathways available.</string>
+    <string name="nombre_del_recorrido">Pathway name</string>
+    <string name="paso">Step</string>
+    <string name="confirmar_eliminar_recorrido">Do you wish to delete this pathway?</string>
 </resources>

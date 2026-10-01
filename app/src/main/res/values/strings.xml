@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nombre_app">Tu guiador</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="anadir_o_importar_recorrido">Añade o importa un recorrido.</string>
+    <string name="anadir_paso">Añadir paso</string>
+    <string name="anadir_recorrido">Añadir recorrido</string>
+    <string name="anadir_un_recorrido">Añadir un recorrido</string>
+    <string name="cerrar">Cerrar</string>
+    <string name="descripcion_del_recorrido">Descripción del recorrido</string>
+    <string name="editar">Editar</string>
+    <string name="error_importar_mensaje">El recorrido no se ha podido importar correctamente.</string>
+    <string name="exito_importar_mensaje">El recorrido se ha importado correctamente.</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="eliminar_recorrido">Eliminar recorrido</string>
+    <string name="error_importar_titulo">Error al importar</string>
+    <string name="guardar_recorrido">Guardar recorrido</string>
+    <string name="exito_importar_titulo">Importación exitosa</string>
+    <string name="importar_desde_portapapeles">Importar un recorrido desde el portapapeles</string>
+    <string name="listado_de_recorridos">Listado de recorridos</string>
+    <string name="mantener_pulsado_para_opciones">Mantén pulsado un recorrido para ver opciones</string>
+    <string name="no_hay_recorridos">No hay recorridos disponibles.</string>
+    <string name="nombre_del_recorrido">Nombre del recorrido</string>
+    <string name="paso">Paso</string>
+    <string name="confirmar_eliminar_recorrido">¿Deseas eliminar este recorrido?</string>
 </resources>
