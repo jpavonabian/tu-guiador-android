@@ -23,4 +23,8 @@
     <string name="nombre_del_recorrido">Nombre del recorrido</string>
     <string name="paso">Paso</string>
     <string name="confirmar_eliminar_recorrido">¿Deseas eliminar este recorrido?</string>
+    <string name="atras">Atrás</string>
+    <string name="compartir">Compartir</string>
+    <string name="compartir_recorrido">Compartir recorrido</string>
+    <string name="ver_opciones">Ver opciones</string>
 </resources>

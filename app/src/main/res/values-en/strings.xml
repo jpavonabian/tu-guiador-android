@@ -23,4 +23,8 @@
     <string name="nombre_del_recorrido">Pathway name</string>
     <string name="paso">Step</string>
     <string name="confirmar_eliminar_recorrido">Do you wish to delete this pathway?</string>
+    <string name="atras">Back</string>
+    <string name="compartir">Share</string>
+    <string name="compartir_recorrido">Share pathway</string>
+    <string name="ver_opciones">Show options</string>
 </resources>
