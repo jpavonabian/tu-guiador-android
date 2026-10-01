@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Jesús Pavón Abián
+
 package es.jesuspavonabian.tuguiador
 
 import android.content.Context
