@@ -1,0 +1,100 @@
+package es.jesuspavonabian.tuguiador
+
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.io.IOException
+
+class Controlador(
+    private val almacen: Almacen,
+    despachador: CoroutineDispatcher = Dispatchers.IO,
+) : ViewModel() {
+    private val _recorridos = MutableStateFlow<List<Recorrido>>(emptyList())
+    val recorridos: StateFlow<List<Recorrido>> = _recorridos
+
+    private val ambito = CoroutineScope(SupervisorJob() + despachador)
+
+    // Un solo cambio a la vez, y la carga va siempre la primera (el Mutex es justo):
+    // así nunca se guarda nada encima de un archivo que aún no se ha leído.
+    private val cerrojo = Mutex()
+
+    init {
+        ambito.launch {
+            cerrojo.withLock {
+                when (val resultado = almacen.cargar()) {
+                    is Almacen.Resultado.Lista -> _recorridos.value = resultado.recorridos
+                    // Lista vacía sin tocar el archivo hasta que el usuario cambie algo.
+                    Almacen.Resultado.Ilegible -> _recorridos.value = emptyList()
+                }
+            }
+        }
+    }
+
+    fun añadirRecorrido(nuevoRecorrido: Recorrido) {
+        ambito.launch { modificar { it + nuevoRecorrido } }
+    }
+
+    fun eliminarRecorrido(recorrido: Recorrido) {
+        ambito.launch { modificar { lista -> lista.filter { it.id != recorrido.id } } }
+    }
+
+    fun editarRecorrido(recorridoAEditar: Recorrido, nuevoRecorrido: Recorrido) {
+        ambito.launch {
+            modificar { lista ->
+                lista.map { if (it.id == recorridoAEditar.id) nuevoRecorrido else it }
+            }
+        }
+    }
+
+    fun obtenerRecorridoPorID(id: Int): Recorrido? = _recorridos.value.firstOrNull { it.id == id }
+
+    fun obtenerJSONRecorrido(recorrido: Recorrido): String =
+        jsonRecorridos.encodeToString(Recorrido.serializer(), recorrido)
+
+    // Devuelve el recorrido (el ya existente si hay uno con mismo nombre y descripción)
+    // o null si el JSON no es válido.
+    suspend fun importarRecorrido(json: String): Recorrido? {
+        val importado = try {
+            jsonRecorridos.decodeFromString(Recorrido.serializer(), json)
+        } catch (e: Exception) {
+            return null
+        }
+        return cerrojo.withLock {
+            val existente = _recorridos.value.firstOrNull { it == importado }
+            existente ?: run {
+                aplicar(_recorridos.value + importado)
+                _recorridos.value.last()
+            }
+        }
+    }
+
+    fun asignarIdentificadoresUnicos(lista: List<Recorrido>): List<Recorrido> =
+        lista.mapIndexed { indice, recorrido -> recorrido.copy(id = indice) }
+
+    private suspend fun modificar(cambio: (List<Recorrido>) -> List<Recorrido>) {
+        cerrojo.withLock { aplicar(cambio(_recorridos.value)) }
+    }
+
+    // Se llama con el cerrojo tomado.
+    private fun aplicar(lista: List<Recorrido>) {
+        val nueva = asignarIdentificadoresUnicos(lista)
+        _recorridos.value = nueva
+        try {
+            almacen.guardar(nueva)
+        } catch (e: IOException) {
+            // Como en iOS, un fallo al guardar no se notifica (pendiente de decidir).
+        }
+    }
+
+    override fun onCleared() {
+        ambito.cancel()
+    }
+}
