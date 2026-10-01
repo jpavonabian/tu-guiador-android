@@ -27,4 +27,11 @@
     <string name="compartir">Share</string>
     <string name="compartir_recorrido">Share pathway</string>
     <string name="ver_opciones">Show options</string>
+    <string name="cancelar">Cancel</string>
+    <string name="paso_numero">Step %1$d</string>
+    <string name="eliminar_paso">Delete step %1$d</string>
+    <string name="descartar_titulo">Discard changes?</string>
+    <string name="descartar_mensaje">If you close now, any unsaved changes will be lost.</string>
+    <string name="descartar">Discard</string>
+    <string name="seguir_editando">Keep editing</string>
 </resources>

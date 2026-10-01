@@ -27,4 +27,11 @@
     <string name="compartir">Compartir</string>
     <string name="compartir_recorrido">Compartir recorrido</string>
     <string name="ver_opciones">Ver opciones</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="paso_numero">Paso %1$d</string>
+    <string name="eliminar_paso">Eliminar paso %1$d</string>
+    <string name="descartar_titulo">¿Descartar los cambios?</string>
+    <string name="descartar_mensaje">Si cierras ahora, se perderán los cambios que no hayas guardado.</string>
+    <string name="descartar">Descartar</string>
+    <string name="seguir_editando">Seguir editando</string>
 </resources>
