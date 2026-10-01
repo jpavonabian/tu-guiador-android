@@ -42,10 +42,14 @@ fun RecorridoDetalles(
     if (recorrido == null) return
 
     Scaffold(modifier = Modifier.fillMaxSize()) { margen ->
+        // Todo dentro del scroll: con fuente grande o en horizontal, un botón fijo abajo
+        // dejaría casi sin sitio al contenido. El orden de lectura no cambia.
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(margen),
+                .padding(margen)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             TextButton(
                 onClick = onAtras,
@@ -53,29 +57,24 @@ fun RecorridoDetalles(
             ) {
                 Text(stringResource(R.string.atras))
             }
-            Column(
+            Text(
+                text = recorrido.nombre,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+                    .padding(horizontal = 16.dp)
+                    .semantics { heading() },
+            )
+            Text(
+                text = recorrido.descripcion,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            recorrido.pasos.forEach { paso ->
                 Text(
-                    text = recorrido.nombre,
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.semantics { heading() },
-                )
-                Text(
-                    text = recorrido.descripcion,
+                    text = paso,
                     style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
-                recorrido.pasos.forEach { paso ->
-                    Text(
-                        text = paso,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
             }
             Button(
                 onClick = { compartirRecorrido(contexto, controlador.obtenerJSONRecorrido(recorrido)) },
