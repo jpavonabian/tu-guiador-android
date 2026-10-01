@@ -1,0 +1,22 @@
+Tu guiador te ayuda a guardar y compartir indicaciones para llegar a un lugar o moverte por interiores, de forma sencilla y accesible.
+
+¿Alguna vez has olvidado por dónde tenías que ir? Con Tu guiador no volverá a pasarte. Crea un recorrido con un nombre, una descripción y todos sus pasos, y consúltalo cuando lo necesites.
+
+<b>Qué puedes hacer</b>
+• Crear, editar y eliminar recorridos.
+• Compartir un recorrido con tus contactos por cualquier aplicación. Quien lo reciba puede importarlo en la suya con solo pulsar un botón.
+• Compartir recorridos con quien use la versión de iPhone, y al revés: son compatibles.
+• Importar un recorrido desde el portapapeles.
+• Exportar todos tus recorridos a un archivo y volver a importarlos cuando quieras.
+
+<b>Accesible</b>
+Está pensada para personas ciegas y se maneja con TalkBack. Cada recorrido es un único elemento de la lista, con las acciones Editar, Eliminar y Compartir, los campos tienen etiquetas claras, y respeta el tamaño de letra y el modo oscuro del sistema.
+
+<b>Tus datos, solo tuyos</b>
+Los recorridos se guardan únicamente en tu móvil. La aplicación no tiene anuncios ni rastreadores, no necesita permiso de internet y no hace copia de seguridad en la nube. Para no perder tus recorridos al cambiar de móvil o al desinstalar la app, expórtalos a un archivo.
+
+<b>Software libre</b>
+Tu guiador es software libre, con licencia GPL-3.0 o posterior. Código fuente: https://gitlab.com/jpavonabian/tu-guiador-android
+
+<b>Atención</b>
+Ten mucho cuidado al seguir instrucciones. Tu guiador permite compartir indicaciones para llegar a sitios y está diseñada para ayudar a las personas ciegas a compartir y recordar indicaciones o a moverse por interiores. La aplicación no puede garantizar que las instrucciones que te lleguen sean seguras. Añade y sigue solo recorridos de gente de confianza: tu seguridad puede estar en riesgo si no lo haces.

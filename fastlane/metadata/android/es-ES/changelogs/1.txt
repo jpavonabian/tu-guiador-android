@@ -1,0 +1,1 @@
+Primera versión para Android: crea, edita, elimina, comparte e importa recorridos, y exporta o importa todos ellos en un archivo.

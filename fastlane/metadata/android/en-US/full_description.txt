@@ -1,0 +1,22 @@
+Tu guiador helps you save and share directions to get to a place or move around indoors, simply and accessibly.
+
+Ever forgotten which way you had to go? With Tu guiador that won't happen again. Create a pathway with a name, a description and all its steps, and check it whenever you need it.
+
+<b>What you can do</b>
+• Create, edit and delete pathways.
+• Share a pathway with your contacts through any app. Whoever receives it can import it into their own app with a single button.
+• Share pathways with people who use the iPhone version, and the other way around: they are compatible.
+• Import a pathway from the clipboard.
+• Export all your pathways to a file and import them again whenever you want.
+
+<b>Accessible</b>
+It is designed for blind people and works with TalkBack. Each pathway is a single item in the list, with Edit, Delete and Share actions, fields have clear labels, and it respects the system font size and dark mode.
+
+<b>Your data stays yours</b>
+Pathways are stored only on your phone. The app has no ads or trackers, doesn't need internet permission and doesn't back up to the cloud. To avoid losing your pathways when you change phones or uninstall the app, export them to a file.
+
+<b>Free software</b>
+Tu guiador is free software, licensed under GPL-3.0 or later. Source code: https://gitlab.com/jpavonabian/tu-guiador-android
+
+<b>Warning</b>
+Be very careful when following directions. Tu guiador lets you share directions to get to places and is designed to help blind people share and remember directions or move around indoors. The app cannot guarantee that the directions you receive are safe. Only add and follow pathways from people you trust: your safety may be at risk if you don't.
