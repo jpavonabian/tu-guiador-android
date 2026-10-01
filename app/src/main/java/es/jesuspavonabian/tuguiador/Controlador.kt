@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.builtins.ListSerializer
 import java.io.IOException
 
 class Controlador(
     private val almacen: Almacen,
-    despachador: CoroutineDispatcher = Dispatchers.IO,
+    private val despachador: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     private val _recorridos = MutableStateFlow<List<Recorrido>>(emptyList())
     val recorridos: StateFlow<List<Recorrido>> = _recorridos
@@ -67,13 +69,36 @@ class Controlador(
         } catch (e: Exception) {
             return null
         }
-        return cerrojo.withLock {
-            val existente = _recorridos.value.firstOrNull { it == importado }
-            existente ?: run {
-                aplicar(_recorridos.value + importado)
-                _recorridos.value.last()
+        return withContext(despachador) {
+            cerrojo.withLock {
+                val existente = _recorridos.value.firstOrNull { it == importado }
+                existente ?: run {
+                    aplicar(_recorridos.value + importado)
+                    _recorridos.value.last()
+                }
             }
         }
+    }
+
+    fun obtenerJSONTodos(): String =
+        jsonRecorridos.encodeToString(ListSerializer(Recorrido.serializer()), _recorridos.value)
+
+    // Importa un archivo de recorridos: un array (como recorridos.json) o un solo recorrido.
+    // Añade los que no existan ya (mismo nombre y descripción). Si no es válido, no toca nada.
+    suspend fun importarArchivo(json: String): Boolean {
+        val importados = try {
+            jsonRecorridos.decodeFromString(ListSerializer(Recorrido.serializer()), json)
+        } catch (e: Exception) {
+            return importarRecorrido(json) != null
+        }
+        withContext(despachador) {
+            cerrojo.withLock {
+                val actuales = _recorridos.value
+                val nuevos = importados.filter { it !in actuales }.distinct()
+                if (nuevos.isNotEmpty()) aplicar(actuales + nuevos)
+            }
+        }
+        return true
     }
 
     fun asignarIdentificadoresUnicos(lista: List<Recorrido>): List<Recorrido> =

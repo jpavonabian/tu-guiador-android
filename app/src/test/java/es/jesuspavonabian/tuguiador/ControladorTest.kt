@@ -3,8 +3,10 @@ package es.jesuspavonabian.tuguiador
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -93,6 +95,53 @@ class ControladorTest {
         c.añadirRecorrido(Recorrido(0, "A", "a", emptyList()))
         assertEquals(1, enDisco().size)
         assertEquals(basura, File(carpeta.root, "recorridos.json.corrupto").readText())
+    }
+
+    @Test
+    fun importarArchivoAñadeSoloLosQueNoExisten() = runBlocking {
+        val c = nuevo()
+        c.añadirRecorrido(Recorrido(0, "A", "a", listOf("original")))
+        val json = """[
+            {"id":0,"nombre":"A","descripcion":"a","pasos":["otro"]},
+            {"id":1,"nombre":"B","descripcion":"b","pasos":["1"]},
+            {"id":2,"nombre":"B","descripcion":"b","pasos":["repetido en el archivo"]}
+        ]"""
+        assertTrue(c.importarArchivo(json))
+        assertEquals(listOf("A", "B"), c.recorridos.value.map { it.nombre })
+        assertEquals(listOf("original"), c.recorridos.value[0].pasos)
+        assertEquals(listOf(0, 1), enDisco().map { it.id })
+    }
+
+    @Test
+    fun importarArchivoAceptaUnSoloRecorrido() = runBlocking {
+        val c = nuevo()
+        assertTrue(c.importarArchivo("""{"id":9,"nombre":"N","descripcion":"D","pasos":["x"]}"""))
+        assertEquals(listOf("N"), c.recorridos.value.map { it.nombre })
+    }
+
+    @Test
+    fun importarArchivoInvalidoNoTocaNada() = runBlocking {
+        val c = nuevo()
+        c.añadirRecorrido(Recorrido(0, "A", "a", emptyList()))
+        assertFalse(c.importarArchivo("esto no es json"))
+        assertFalse(c.importarArchivo(""))
+        assertEquals(listOf("A"), c.recorridos.value.map { it.nombre })
+        assertEquals(listOf("A"), enDisco().map { it.nombre })
+    }
+
+    @Test
+    fun exportarTodosYVolverAImportarConservaLosDatos() = runBlocking {
+        val origen = nuevo()
+        origen.añadirRecorrido(Recorrido(0, "A", "a", listOf("1", "2")))
+        origen.añadirRecorrido(Recorrido(0, "B", "b", emptyList()))
+        val json = origen.obtenerJSONTodos()
+        assertTrue(json.startsWith("["))
+
+        val otraCarpeta = carpeta.newFolder()
+        val destino = Controlador(Almacen(otraCarpeta), Dispatchers.Unconfined)
+        assertTrue(destino.importarArchivo(json))
+        assertEquals(origen.recorridos.value.map { it.pasos }, destino.recorridos.value.map { it.pasos })
+        assertEquals(listOf("A", "B"), destino.recorridos.value.map { it.nombre })
     }
 
     @Test
