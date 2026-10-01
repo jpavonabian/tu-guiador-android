@@ -57,6 +57,7 @@ fun ListaRecorridos(
 ) {
     val recorridos by controlador.recorridos.collectAsStateWithLifecycle()
     var idAEliminar by rememberSaveable { mutableStateOf<Int?>(null) }
+    val acciones = rememberAccionesImportacion(controlador)
 
     Scaffold(modifier = Modifier.fillMaxSize()) { margen ->
         if (recorridos.isEmpty()) {
@@ -77,6 +78,12 @@ fun ListaRecorridos(
                 )
                 Button(onClick = onAnadir) {
                     Text(stringResource(R.string.anadir_un_recorrido))
+                }
+                Button(onClick = acciones.importarPortapapeles) {
+                    Text(stringResource(R.string.importar_desde_portapapeles))
+                }
+                Button(onClick = acciones.importarArchivo) {
+                    Text(stringResource(R.string.importar_archivo))
                 }
             }
         } else {
@@ -100,11 +107,16 @@ fun ListaRecorridos(
                     }
                 }
                 item {
-                    Button(
-                        onClick = onAnadir,
+                    Column(
                         modifier = Modifier.padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Text(stringResource(R.string.anadir_un_recorrido))
+                        Button(onClick = onAnadir) {
+                            Text(stringResource(R.string.anadir_un_recorrido))
+                        }
+                        Button(onClick = acciones.importarPortapapeles) {
+                            Text(stringResource(R.string.importar_desde_portapapeles))
+                        }
                     }
                 }
                 items(recorridos, key = { it.id }) { recorrido ->
@@ -115,6 +127,19 @@ fun ListaRecorridos(
                         onEditar = { onEditar(recorrido) },
                         onEliminar = { idAEliminar = recorrido.id },
                     )
+                }
+                item {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Button(onClick = acciones.exportarTodos) {
+                            Text(stringResource(R.string.exportar_todos))
+                        }
+                        Button(onClick = acciones.importarArchivo) {
+                            Text(stringResource(R.string.importar_archivo))
+                        }
+                    }
                 }
             }
         }
