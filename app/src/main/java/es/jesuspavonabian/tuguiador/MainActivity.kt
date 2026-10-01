@@ -15,7 +15,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import es.jesuspavonabian.tuguiador.ui.theme.TemaTuGuiador
+import es.jesuspavonabian.tuguiador.vistas.EditarRecorrido
 import es.jesuspavonabian.tuguiador.vistas.ListaRecorridos
+import es.jesuspavonabian.tuguiador.vistas.NuevoRecorrido
 import es.jesuspavonabian.tuguiador.vistas.RecorridoDetalles
 
 class MainActivity : ComponentActivity() {
@@ -34,6 +36,24 @@ class MainActivity : ComponentActivity() {
                             ListaRecorridos(
                                 controlador = controlador,
                                 onAbrir = { navegador.navigate("detalle/${it.id}") },
+                                onAnadir = { navegador.navigate("nuevo") },
+                                onEditar = { navegador.navigate("editar/${it.id}") },
+                            )
+                        }
+                        composable("nuevo") {
+                            NuevoRecorrido(
+                                controlador = controlador,
+                                onCerrar = { navegador.popBackStack() },
+                            )
+                        }
+                        composable(
+                            route = "editar/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.IntType }),
+                        ) { entrada ->
+                            EditarRecorrido(
+                                controlador = controlador,
+                                id = entrada.arguments!!.getInt("id"),
+                                onCerrar = { navegador.popBackStack() },
                             )
                         }
                         composable(

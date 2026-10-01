@@ -13,15 +13,19 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,8 +52,11 @@ fun compartirRecorrido(contexto: Context, json: String) {
 fun ListaRecorridos(
     controlador: Controlador,
     onAbrir: (Recorrido) -> Unit,
+    onAnadir: () -> Unit,
+    onEditar: (Recorrido) -> Unit,
 ) {
     val recorridos by controlador.recorridos.collectAsStateWithLifecycle()
+    var idAEliminar by rememberSaveable { mutableStateOf<Int?>(null) }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { margen ->
         if (recorridos.isEmpty()) {
@@ -68,6 +75,9 @@ fun ListaRecorridos(
                     text = stringResource(R.string.anadir_o_importar_recorrido),
                     style = MaterialTheme.typography.bodyLarge,
                 )
+                Button(onClick = onAnadir) {
+                    Text(stringResource(R.string.anadir_un_recorrido))
+                }
             }
         } else {
             LazyColumn(
@@ -89,15 +99,47 @@ fun ListaRecorridos(
                         )
                     }
                 }
+                item {
+                    Button(
+                        onClick = onAnadir,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    ) {
+                        Text(stringResource(R.string.anadir_un_recorrido))
+                    }
+                }
                 items(recorridos, key = { it.id }) { recorrido ->
                     FilaRecorrido(
                         recorrido = recorrido,
                         json = controlador.obtenerJSONRecorrido(recorrido),
                         onAbrir = { onAbrir(recorrido) },
+                        onEditar = { onEditar(recorrido) },
+                        onEliminar = { idAEliminar = recorrido.id },
                     )
                 }
             }
         }
+    }
+
+    val aEliminar = recorridos.firstOrNull { it.id == idAEliminar }
+    if (aEliminar != null) {
+        AlertDialog(
+            onDismissRequest = { idAEliminar = null },
+            title = { Text(stringResource(R.string.eliminar_recorrido)) },
+            text = { Text(stringResource(R.string.confirmar_eliminar_recorrido)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    controlador.eliminarRecorrido(aEliminar)
+                    idAEliminar = null
+                }) {
+                    Text(stringResource(R.string.eliminar))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { idAEliminar = null }) {
+                    Text(stringResource(R.string.cancelar))
+                }
+            },
+        )
     }
 }
 
@@ -107,9 +149,13 @@ private fun FilaRecorrido(
     recorrido: Recorrido,
     json: String,
     onAbrir: () -> Unit,
+    onEditar: () -> Unit,
+    onEliminar: () -> Unit,
 ) {
     val contexto = LocalContext.current
     var menuAbierto by remember { mutableStateOf(false) }
+    val etiquetaEditar = stringResource(R.string.editar)
+    val etiquetaEliminar = stringResource(R.string.eliminar)
     val etiquetaCompartir = stringResource(R.string.compartir)
 
     Box {
@@ -125,6 +171,14 @@ private fun FilaRecorrido(
                 )
                 .semantics(mergeDescendants = true) {
                     customActions = listOf(
+                        CustomAccessibilityAction(etiquetaEditar) {
+                            onEditar()
+                            true
+                        },
+                        CustomAccessibilityAction(etiquetaEliminar) {
+                            onEliminar()
+                            true
+                        },
                         CustomAccessibilityAction(etiquetaCompartir) {
                             compartirRecorrido(contexto, json)
                             true
@@ -132,14 +186,28 @@ private fun FilaRecorrido(
                     )
                 }
                 .heightIn(min = 48.dp)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
         )
         DropdownMenu(expanded = menuAbierto, onDismissRequest = { menuAbierto = false }) {
+            DropdownMenuItem(
+                text = { Text(etiquetaEditar) },
+                onClick = {
+                    menuAbierto = false
+                    onEditar()
+                },
+            )
             DropdownMenuItem(
                 text = { Text(etiquetaCompartir) },
                 onClick = {
                     menuAbierto = false
                     compartirRecorrido(contexto, json)
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(etiquetaEliminar) },
+                onClick = {
+                    menuAbierto = false
+                    onEliminar()
                 },
             )
         }
