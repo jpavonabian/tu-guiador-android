@@ -1,6 +1,6 @@
 # Plan de migración: Tu guiador iOS → Android
 
-Origen (solo lectura): `C:\Users\Usuario\Desktop\repos\Tu-guiador` (SwiftUI, iOS 16+).
+Origen (solo lectura): el repo `Tu-guiador`, clonado junto a este (`../Tu-guiador`) (SwiftUI, iOS 16+).
 Destino: este repo. Android nativo, Kotlin, Jetpack Compose.
 
 ## Objetivo
@@ -73,7 +73,7 @@ Los recorridos se comparten entre personas como JSON, también entre iOS y Andro
 - Replicar `importarRecorrido`: si ya existe uno con mismo nombre y descripción, no se duplica y cuenta como éxito; JSON inválido devuelve error.
 - Un único recorrido se comparte como objeto (`{…}`), el archivo completo es array (`[…]`).
 
-## Estructura propuesta
+## Estructura
 
 ```
 app/src/main/java/es/jesuspavonabian/tuguiador/
@@ -81,16 +81,20 @@ app/src/main/java/es/jesuspavonabian/tuguiador/
   Controlador.kt           ViewModel: carga, guardado, importación
   Recorrido.kt             Modelo
   Almacen.kt               Lectura/escritura de recorridos.json (solo `filesDir`)
+  ui/theme/Tema.kt         Tema Material 3 (colores dinámicos, modo oscuro)
   vistas/
     ListaRecorridos.kt     Listado + estado vacío
     RecorridoDetalles.kt
-    NuevoRecorrido.kt
+    NuevoRecorrido.kt      Incluye el formulario común de Nuevo y Editar
     EditarRecorrido.kt
-    Importar.kt
+    Importar.kt            Portapapeles y archivos (importar/exportar)
 app/src/main/res/values/strings.xml       Español (base)
 app/src/main/res/values-en/strings.xml    Inglés ("pathway")
-app/src/test/                              Tests unitarios (modelo y controlador)
+app/src/main/res/xml/                      Reglas de copia de seguridad (todo excluido)
+app/src/main/res/{drawable,mipmap-anydpi}/ Icono adaptativo
+app/src/test/                              Tests unitarios (modelo, almacén y controlador)
 app/src/androidTest/                       Tests de UI / accesibilidad
+icono/                                     Fuente SVG del icono y cómo se hizo
 ```
 
 Nombres en español, como en el origen. Nada de capas extra (sin Clean Architecture, sin repositorios, sin casos de uso).
@@ -106,6 +110,13 @@ Sin Hilt/Koin, Room/DataStore, Retrofit, Coil, Firebase, analítica ni anuncios.
 
 **Publicación en F-Droid:** se permite AndroidX y Kotlin. Prohibido: Play Services, Firebase, ML Kit y cualquier SDK de analítica, publicidad o informes de errores (también transitivos). Sin permiso `INTERNET` salvo que se justifique. Copia de seguridad en la nube desactivada; exportación manual de datos en su lugar. No se publicará en Play Store.
 
+## Estado
+
+- Fases 0 a 4: hechas. `assembleDebug testDebugUnitTest lint` pasa sin avisos.
+- Fase 5: escritos los tests de semántica (`AccesibilidadTest`). Falta ejecutarlos en un dispositivo y hacer la auditoría manual con TalkBack real y el Accessibility Scanner.
+- Fase 6: hechos la licencia (GPL-3.0-or-later) y el icono. El resto, abajo.
+- Decisión abierta: como en iOS, un fallo al guardar no se notifica al usuario. Pendiente de decidir en una fase de corrección de errores.
+
 ## Fases
 
 ### Fase 0: esqueleto
@@ -120,7 +131,7 @@ Sin Hilt/Koin, Room/DataStore, Retrofit, Coil, Firebase, analítica ni anuncios.
 - E/S fuera del hilo principal (corrutinas con `Dispatchers.IO`); guardado atómico (escribir a temporal y renombrar) para no corromper el JSON.
 - Si el archivo no existe: lista vacía. Si está corrupto: lista vacía **sin sobrescribir** el archivo hasta que el usuario cambie algo; dejar copia `recorridos.json.corrupto`.
 - Tests unitarios: decodificar JSON generado por iOS (fixture copiado de un archivo real, sin datos personales), ida y vuelta, JSON sin campos extra, igualdad, importación duplicada, ids.
-- `strings.xml` (es) y `values-en` con las 24 cadenas existentes en `en.lproj`.
+- `strings.xml` (es) y `values-en` con las 19 cadenas existentes en `en.lproj` (cubren todos los textos de las vistas de iOS).
 
 ### Fase 2: lista y detalle (solo lectura)
 - Estado vacío: texto "No hay recorridos disponibles." / "Añade o importa un recorrido." + botones.
@@ -146,9 +157,15 @@ Sin Hilt/Koin, Room/DataStore, Retrofit, Coil, Firebase, analítica ni anuncios.
 - Tests Compose de semántica.
 - Probar con fuente al 200 %, tamaño de pantalla pequeño, modo oscuro, orientación horizontal y Cambio de acceso con teclado/switch.
 
-### Fase 6: publicación
-- Icono adaptativo (partir de `icon-1024.png` del repo iOS; solo leer y copiar).
-- Firma de release (el keystore **nunca** al repo), `versionCode`/`versionName`, metadatos y ficha de F-Droid (fastlane) en es y en.
+### Fase 6: publicación (F-Droid)
+F-Droid compila el código fuente público y firma el APK con su propia clave.
+- Hecho: licencia GPL-3.0-or-later (`LICENSE` y cabecera SPDX en cada `.kt`); icono adaptativo propio, no derivado del PNG de iOS (ver `icono/icono.md`).
+- El repositorio (GitLab) debe ser público.
+- `versionCode`/`versionName` y una etiqueta git por versión (`v1.0`…), que es lo que F-Droid compila.
+- Metadatos fastlane en `fastlane/metadata/android/es-ES` y `en-US`: título, descripción corta (80 caracteres como máximo), descripción larga, novedades e `images/icon.png` de 512 px sin transparencia.
+- Comprobar el ajuste de F-Droid sobre el bloque de metadatos de dependencias (`dependenciesInfo`) del APK de release, y que la compilación sale igual desde el código fuente.
+- Ficha de la app en el repositorio `fdroiddata` de F-Droid (merge request).
+- Firma propia solo para los APK que se repartan a mano (el keystore **nunca** al repo). Cambiar de firma obliga a desinstalar, así que se exportan los datos antes.
 - Pruebas internas cerradas con usuarios ciegos antes de producción.
 
 ## Accesibilidad con TalkBack: requisitos
@@ -183,7 +200,7 @@ Equivalentes a los de VoiceOver en la app iOS, más lo que Android exige.
 
 ## Cadenas a traducir (origen: `en.lproj/Localizable.strings`)
 
-Pasar las 24 entradas a `strings.xml` (es) y `values-en/strings.xml`. En inglés, "pathway" = "recorrido". Cadenas nuevas de Android (descripciones accesibles, "Compartir", "Ver opciones", confirmar descartar) también en ambos idiomas.
+Pasar las 19 entradas a `strings.xml` (es) y `values-en/strings.xml`. En inglés, "pathway" = "recorrido". Cadenas nuevas de Android (descripciones accesibles, "Compartir", "Ver opciones", confirmar descartar) también en ambos idiomas.
 
 ## Diferencias deliberadas respecto a iOS
 

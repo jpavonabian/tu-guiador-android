@@ -9,7 +9,9 @@ Tu guiador es una app Android nativa (Kotlin + Jetpack Compose) dirigida a **per
 - El plan de migración está en `plan.md`. Síguelo; si algo no está decidido allí, pregunta.
 - Android Studio reciente, Gradle con Kotlin DSL, Kotlin, Jetpack Compose, Material 3.
 - Interfaz en español (base); traducción al inglés en `values-en`.
-- El repo iOS de origen está en `C:\Users\Usuario\Desktop\repos\Tu-guiador`. **Solo lectura**: nunca lo modifiques, ni siquiera para formatear o corregir.
+- El repo iOS de origen (`Tu-guiador`) se clona junto a este, en la misma carpeta padre (`../Tu-guiador`). **Solo lectura**: nunca lo modifiques, ni siquiera para formatear o corregir.
+- Licencia GPL-3.0-or-later (`LICENSE`). Todo archivo `.kt` nuevo lleva la cabecera SPDX de dos líneas que ya tienen los demás. No cambies la licencia.
+- El icono de la app y cómo se hizo están en `icono/icono.md`.
 
 ## Alcance: haz solo lo que se pide
 
@@ -59,7 +61,7 @@ No modifiques estos archivos o valores salvo petición explícita y específica:
 - `applicationId`, `namespace`, `versionCode`, `versionName`, `minSdk`, `targetSdk` y `compileSdk` en `app/build.gradle.kts`.
 - Configuración de firma (`signingConfigs`), `gradle.properties` con credenciales, `local.properties`.
 - `AndroidManifest.xml`: permisos, `exported`, reglas de backup.
-- `.gitignore`, `plan.md` y este `CLAUDE.md`.
+- `.gitignore`, `LICENSE`, `plan.md` y este `CLAUDE.md`.
 
 Nunca añadas dependencias ni plugins fuera de la lista permitida en `plan.md` (Compose, Navigation, ViewModel, kotlinx.serialization y librerías de test básicas). Nada de red, analítica, publicidad, Firebase, ni permisos nuevos (la app no necesita `INTERNET`).
 
