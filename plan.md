@@ -56,7 +56,7 @@ Son 7 archivos Swift, unas 400 líneas. Toda la funcionalidad:
 
 **F. Crear/editar: decidido.** Pantallas completas de navegación, no hojas modales.
 
-**E. Compatibilidad iOS ⇄ Android.** Propuesta: el JSON de un recorrido compartido desde iOS se importa en Android y al revés, sin conversión.
+**E. Compatibilidad iOS ⇄ Android: comprobada.** El JSON de un recorrido compartido desde iOS se importa en Android y al revés, sin conversión.
 
 ## Contrato de datos (no negociable)
 
@@ -112,10 +112,14 @@ Sin Hilt/Koin, Room/DataStore, Retrofit, Coil, Firebase, analítica ni anuncios.
 
 ## Estado
 
-- Fases 0 a 4: hechas. `assembleDebug testDebugUnitTest lint` pasa sin avisos.
-- Fase 5: escritos los tests de semántica (`AccesibilidadTest`). Falta ejecutarlos en un dispositivo y hacer la auditoría manual con TalkBack real y el Accessibility Scanner.
-- Fase 6: hechos la licencia (GPL-3.0-or-later) y el icono. El resto, abajo.
-- Decisión abierta: como en iOS, un fallo al guardar no se notifica al usuario. Pendiente de decidir en una fase de corrección de errores.
+- Fases 0 a 4: hechas. `assembleDebug testDebugUnitTest lint` pasa sin avisos (23 tests unitarios). La compatibilidad de compartir recorridos entre iOS y Android está comprobada con la app real.
+- Fase 5: escritos los tests de semántica (`AccesibilidadTest`, 10 tests). Falta ejecutarlos en un dispositivo (`connectedDebugAndroidTest`) y hacer la auditoría manual con TalkBack real y el Accessibility Scanner. Se está probando con un APK de depuración entre unos testers.
+- Fase 6: ver abajo. Hecho: licencia, icono, metadatos de F-Droid. Falta: repo público, versión, APK de release y ficha en `fdroiddata`.
+- Compilación: AGP 9.4.1, Kotlin 2.4.20, Gradle 9.8.0, `compileSdk` y `targetSdk` 37, `minSdk` 29. Con `targetSdk` 37 hay que repetir las pruebas manuales en el móvil.
+- Decisiones abiertas:
+  - Como en iOS, un fallo al guardar no se notifica al usuario. Pendiente de una fase de corrección de errores.
+  - `versionName`: `1.0` o `0.1` hasta terminar las pruebas (hoy `1.0` / `versionCode` 1).
+  - Aviso de Gradle `Configuration.setVisible` (de un plugin, no del proyecto): se resuelve al actualizar el plugin.
 
 ## Fases
 
@@ -160,9 +164,9 @@ Sin Hilt/Koin, Room/DataStore, Retrofit, Coil, Firebase, analítica ni anuncios.
 ### Fase 6: publicación (F-Droid)
 F-Droid compila el código fuente público y firma el APK con su propia clave.
 - Hecho: licencia GPL-3.0-or-later (`LICENSE` y cabecera SPDX en cada `.kt`); icono adaptativo propio, no derivado del PNG de iOS (ver `icono/icono.md`).
-- El repositorio (GitLab) debe ser público.
-- `versionCode`/`versionName` y una etiqueta git por versión (`v1.0`…), que es lo que F-Droid compila.
-- Metadatos fastlane en `fastlane/metadata/android/es-ES` y `en-US`: título, descripción corta (80 caracteres como máximo), descripción larga, novedades e `images/icon.png` de 512 px sin transparencia.
+- Hecho: metadatos fastlane en `fastlane/metadata/android/es-ES` y `en-US`: título, descripción corta (80 caracteres como máximo), descripción larga, novedades (`changelogs/1.txt`, que se enlaza con el `versionCode`) e `images/icon.png` de 512 px sin transparencia. Opcional, sin hacer: capturas en `images/phoneScreenshots/`.
+- Hecho: repositorio en GitLab (`gitlab.com/jpavonabian/tu-guiador-android`), con `main` subido. Falta hacerlo **público**.
+- Falta: confirmar `versionCode`/`versionName` y crear una etiqueta git por versión (`v1.0`…), que es lo que F-Droid compila. Si cambia el `versionCode`, se renombra `changelogs/1.txt`.
 - Comprobar el ajuste de F-Droid sobre el bloque de metadatos de dependencias (`dependenciesInfo`) del APK de release, y que la compilación sale igual desde el código fuente.
 - Ficha de la app en el repositorio `fdroiddata` de F-Droid (merge request).
 - Firma propia solo para los APK que se repartan a mano (el keystore **nunca** al repo). Cambiar de firma obliga a desinstalar, así que se exportan los datos antes.
