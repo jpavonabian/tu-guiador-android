@@ -70,10 +70,14 @@ La clave de firma nunca entra en el repo ni en la imagen. `build.gradle.kts` no 
 2. Crea el tag solo en local, sin subirlo todavía: `git tag -a v1.1 -m "v1.1"`. Mientras no esté publicado puedes borrarlo y recrearlo (`git tag -d v1.1`) si hay que corregir algo. Los scripts leen el tag de tu repositorio local.
 3. Comprueba que el build es reproducible con `scripts/verificar-reproducible.sh v1.1`. Si los APK difieren, no sigas.
 4. Crea la clave, solo la primera vez: `scripts/crear-clave.sh ~/claves/tuguiador.jks`. Es RSA 4096 con validez de 10000 días, y tiene que quedar fuera del repo. Haz copia de seguridad: sin ella no podrás actualizar la app ya instalada, ni en el móvil ni en F-Droid. Si F-Droid firma con su propia clave, esta solo vale para tus APK.
-5. Compila y firma:
+5. Compila el APK sin firmar y fírmalo, en dos comandos seguidos:
    `scripts/compilar.sh v1.1`
    `scripts/firmar.sh ~/claves/tuguiador.jks tuguiador`
-   `firmar.sh` pide la contraseña sin mostrarla (o la toma de la variable `KS_PASS`). Usa los esquemas v2 y v3, que bastan con `minSdk` 29. No hace `zipalign` porque el APK de Gradle ya sale alineado, y alinearlo otra vez rompería la comprobación con `apksigcopier`. El resultado es `build-reproducible/release/app-release.apk`.
+   - `compilar.sh` recibe la referencia de git que quieres compilar, aquí el tag `v1.1`. Extrae ese código con `git archive`, lo compila en el contenedor y deja el APK sin firmar en `build-reproducible/release/app-release-unsigned.apk`, junto a `commit.txt` con el hash compilado.
+   - `firmar.sh` recibe primero la ruta del keystore que creaste en el paso 4 (`~/claves/tuguiador.jks`) y después el alias de la clave dentro de ese keystore (`tuguiador`, el que usó `crear-clave.sh`). Por defecto firma el APK que dejó `compilar.sh`.
+   - `firmar.sh` pide la contraseña del keystore sin mostrarla. Para no interactivo, tómala de la variable de entorno `KS_PASS`. El keystore se monta en el contenedor en solo lectura y la contraseña no aparece en la línea de comandos.
+   - Usa los esquemas de firma v2 y v3, que bastan con `minSdk` 29. No hace `zipalign` porque el APK de Gradle ya sale alineado, y alinearlo otra vez rompería la comprobación con `apksigcopier`.
+   - El resultado es `build-reproducible/release/app-release.apk`. Al terminar, `apksigner` muestra el certificado con el que quedó firmado.
 6. Copia el APK firmado fuera de `build-reproducible/`:
    `cp build-reproducible/release/app-release.apk ~/release/tuguiador-1.1.apk`
 7. Verifica que sale de ese tag: `scripts/verificar-firmado.sh ~/release/tuguiador-1.1.apk v1.1`. Debe acabar con `VERIFICADO`.
