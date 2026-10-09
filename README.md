@@ -68,6 +68,25 @@ La carpeta `build-reproducible/` es salida generada y está en `.gitignore`.
 
 Al cambiar una dependencia o un plugin, regenera `gradle/verification-metadata.xml` dentro del contenedor (no en Windows), para incluir también los artefactos de Linux, como `aapt2`.
 
+## Compilar y firmar una release
+
+Todo se hace en el contenedor del `Dockerfile`, a partir de una referencia de git (por defecto `HEAD`). Requiere Linux o WSL con Docker. La clave de firma nunca entra en el repo ni en la imagen: `build.gradle.kts` no tiene `signingConfigs`, se firma después sobre el APK sin firmar.
+
+1. **Compilar sin firmar:** `scripts/compilar.sh [referencia_git]`
+   Deja `build-reproducible/release/app-release-unsigned.apk` y `commit.txt`. Para publicar, usa un tag (por ejemplo `scripts/compilar.sh v1.0`) y comprueba antes con `scripts/verificar-reproducible.sh v1.0` que dos compilaciones coinciden.
+2. **Crear la clave (solo la primera vez):** `scripts/crear-clave.sh ~/claves/tuguiador.jks [alias]`
+   Hecho con el `keytool` del contenedor: RSA 4096, validez de 10000 días. Pide contraseña y datos del certificado. Debe quedar fuera del repo (el script se niega si la ruta está dentro). **Haz copia de seguridad**: si la pierdes no puedes actualizar la app instalada ni en F-Droid ni en el móvil. Si F-Droid firma con su propia clave, esta es solo para tus APK propios.
+3. **Firmar:** `scripts/firmar.sh ~/claves/tuguiador.jks tuguiador`
+   Pide la contraseña sin mostrarla (o usa la variable `KS_PASS`). Usa `apksigner` de `build-tools;36.0.0`, esquemas v2 y v3 (suficiente con `minSdk` 29), sin `zipalign` adicional porque el APK de Gradle ya sale alineado, y verifica la firma al terminar. Resultado: `build-reproducible/release/app-release.apk`.
+4. **Comprobar que el firmado corresponde al código:** `scripts/verificar-firmado.sh build-reproducible/release/app-release.apk v1.0`
+
+Notas:
+
+- `verificar-reproducible.sh` y `verificar-firmado.sh` borran `build-reproducible/` (o `build-reproducible/firmado/`) al empezar. Mueve fuera el APK firmado que quieras conservar.
+- Antes de una release sube `versionCode` y `versionName` en `app/build.gradle.kts` y añade `fastlane/metadata/android/*/changelogs/<versionCode>.txt`.
+- Instalar el APK firmado en el móvil: `adb install -r build-reproducible/release/app-release.apk`. Si había una versión de depuración, desinstálala antes (firma distinta).
+- Los scripts se escribieron sin poder ejecutarlos (sin Docker en la máquina de desarrollo): primera ejecución, revisa la salida.
+
 ## Reglas del proyecto
 
 - Sin servicios de Google (Play Services, Firebase, ML Kit), sin analítica, publicidad ni informes de errores, y sin permiso `INTERNET`. Se publicará en F-Droid.
