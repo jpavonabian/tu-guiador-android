@@ -82,7 +82,18 @@ La clave de firma nunca entra en el repo ni en la imagen. `build.gradle.kts` no 
    `cp build-reproducible/release/app-release.apk ~/release/tuguiador-1.1.apk`
 7. Verifica que sale de ese tag: `scripts/verificar-firmado.sh ~/release/tuguiador-1.1.apk v1.1`. Debe acabar con `VERIFICADO`.
 8. Solo ahora, con todo verificado, sube el código y el tag: `git push origin main v1.1`. Un tag publicado no se mueve.
-9. Publica el APK en la release del tag, con su `sha256sum`.
+9. Publica el APK en una release de GitLab asociada al tag. GitLab no aloja el APK dentro de la release: la release solo enlaza a un archivo, así que primero hay que subirlo a algún sitio con URL estable. Lo más sencillo es el registro de paquetes genéricos del propio proyecto:
+   1. Calcula el hash junto al APK: `cd ~/release && sha256sum tuguiador-1.1.apk > tuguiador-1.1.apk.sha256`.
+   2. Crea un token de acceso personal en GitLab (Preferencias > Tokens de acceso) con el permiso `api`, y guárdalo en una variable de entorno de esa sesión, sin escribirlo en la línea de comandos ni en ningún archivo del repo: `read -r -s GITLAB_TOKEN && export GITLAB_TOKEN`.
+   3. Sube el APK y el hash. Sustituye `ID` por el ID numérico del proyecto, que aparece en la página principal del proyecto en GitLab:
+      `curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" --upload-file ~/release/tuguiador-1.1.apk "https://gitlab.com/api/v4/projects/ID/packages/generic/tuguiador/1.1/tuguiador-1.1.apk"`
+      `curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" --upload-file ~/release/tuguiador-1.1.apk.sha256 "https://gitlab.com/api/v4/projects/ID/packages/generic/tuguiador/1.1/tuguiador-1.1.apk.sha256"`
+   4. En GitLab, Deploy > Releases > New release: elige el tag `v1.1`, escribe las notas y, en "Release assets", añade dos enlaces con las URLs de arriba (el APK y su `.sha256`). Pega también el hash en las notas para que se pueda comprobar sin descargar nada.
+   5. Revoca el token cuando termines, o pon una fecha de caducidad corta.
+
+   Si instalas la CLI `glab`, `glab release create v1.1 ~/release/tuguiador-1.1.apk` hace los pasos de subida y de la release de una vez. Comprueba antes `glab release create --help`, porque el comportamiento con archivos puede variar entre versiones.
+
+   Si ya subiste un archivo con ese nombre y versión, GitLab puede rechazar o duplicar la subida. Comprueba en Deploy > Package registry que el APK publicado es el verificado en el paso 7.
 
 Para instalar el APK firmado en el móvil: `adb install -r ~/release/tuguiador-1.1.apk`. Si había una versión de depuración, desinstálala antes, porque la firma es distinta.
 
