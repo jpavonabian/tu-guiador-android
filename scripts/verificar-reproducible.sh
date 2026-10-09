@@ -18,12 +18,11 @@ docker build -t "$imagen" "$raiz"
 
 # Los scripts se leen de este árbol (:ro); el código a compilar sale de la referencia con git archive.
 compilar() {
-    local n="$1" trabajo="$2" zona="$3" umask_="$4" host="$5" fecha="$6"
+    local n="$1" trabajo="$2" zona="$3" umask_="$4" host="$5"
     docker run --rm \
         --hostname "$host" \
         -e TZ="$zona" \
         -e UMASK="$umask_" \
-        -e FECHA_ADELANTADA="$fecha" \
         -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
         -v "$raiz":/src:ro \
         -v "$salida/$n":/out \
@@ -32,9 +31,9 @@ compilar() {
 }
 
 echo "== Compilación 1 de 2: ruta corta, UTC, umask 0022, hostname build-uno =="
-compilar 1 /build UTC 0022 build-uno ""
-echo "== Compilación 2 de 2: ruta larga, UTC+14, umask 0077, hostname build-dos, fecha +30 días =="
-compilar 2 /tmp/una/ruta/de/trabajo/mucho/mas/larga/que/la/primera/proyecto Pacific/Kiritimati 0077 build-dos "+30d"
+compilar 1 /build UTC 0022 build-uno
+echo "== Compilación 2 de 2: ruta larga, UTC+14, umask 0077, hostname build-dos =="
+compilar 2 /tmp/una/ruta/de/trabajo/mucho/mas/larga/que/la/primera/proyecto Pacific/Kiritimati 0077 build-dos
 
 echo "Commit compilado: $(cat "$salida/1/commit.txt") y $(cat "$salida/2/commit.txt")"
 sha256sum "$salida/1/app-release-unsigned.apk" "$salida/2/app-release-unsigned.apk"

@@ -54,7 +54,7 @@ Los scripts de `scripts/` lanzan el contenedor ellos solos, no hay que arrancar 
 - `compilar.sh [referencia]` compila el release sin firmar en un contenedor y deja `app-release-unsigned.apk` y `commit.txt` en `build-reproducible/release/`.
 - `crear-clave.sh <ruta> [alias]` crea un keystore con el `keytool` del contenedor. Es interactivo: pide contraseñas y datos del certificado. Se niega a escribir dentro del repo o a sobrescribir un archivo.
 - `firmar.sh <keystore> <alias>` firma el APK sin firmar con el `apksigner` del contenedor, con el keystore montado en solo lectura, y verifica la firma. Deja `app-release.apk`.
-- `verificar-reproducible.sh [referencia]` compila dos veces en dos contenedores con entornos distintos (ruta de trabajo, zona horaria, umask, hostname y fecha adelantada 30 días en la segunda) y compara los APK en tu máquina. Si difieren, guarda el informe de diffoscope en `build-reproducible/informe-diffoscope.txt`.
+- `verificar-reproducible.sh [referencia]` compila dos veces en dos contenedores con entornos distintos (ruta de trabajo, zona horaria, umask y hostname) y compara los APK en tu máquina. Si difieren, guarda el informe de diffoscope en `build-reproducible/informe-diffoscope.txt`.
 - `verificar-firmado.sh <apk> [referencia]` compila de cero en un contenedor y compara el resultado con tu APK firmado usando `apksigcopier compare`. Si no coincide, guarda el informe en `build-reproducible/firmado/informe-diffoscope.txt`.
 - `compilar-release.sh` es el script interno que corre dentro del contenedor. Lo usan `compilar.sh` y los dos de verificación. No se ejecuta a mano: sin argumentos solo muestra cómo se usa.
 

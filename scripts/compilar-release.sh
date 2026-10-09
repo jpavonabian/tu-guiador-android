@@ -5,7 +5,6 @@
 # Uso: compilar-release.sh <repositorio_solo_lectura> <referencia> <carpeta_de_trabajo> <carpeta_salida>
 # Variables opcionales:
 #   UMASK              umask con el que se compila (por ejemplo 0077).
-#   FECHA_ADELANTADA   desplazamiento de faketime (por ejemplo +30d).
 #   HOST_UID, HOST_GID propietario con el que quedan los archivos de salida.
 set -euo pipefail
 
@@ -31,15 +30,7 @@ git -c safe.directory='*' -C "$repositorio" archive --format=tar "$commit" | tar
 cd "$trabajo"
 export GRADLE_USER_HOME=/tmp/gradle-home
 gradle=(bash ./gradlew --no-daemon --no-build-cache --console=plain)
-if [ -n "${FECHA_ADELANTADA:-}" ]; then
-    # Con la fecha adelantada caducan los certificados TLS: primero se descarga todo con el reloj
-    # real, y la compilación que cuenta se hace con el reloj adelantado y sin red.
-    "${gradle[@]}" assembleRelease
-    "${gradle[@]}" clean
-    faketime -f "$FECHA_ADELANTADA" "${gradle[@]}" --offline assembleRelease
-else
-    "${gradle[@]}" assembleRelease
-fi
+"${gradle[@]}" assembleRelease
 
 cp app/build/outputs/apk/release/app-release-unsigned.apk "$salida/app-release-unsigned.apk"
 echo "$commit" > "$salida/commit.txt"

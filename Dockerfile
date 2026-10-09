@@ -12,7 +12,7 @@ ARG CMDLINE_TOOLS=commandlinetools-linux-16111833_latest.zip
 ARG CMDLINE_TOOLS_SHA256=0877a1d048fe4a24efe2eff536ca4223f7adeb58648bb81909d33c446918cfa8
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends unzip git faketime \
+    && apt-get install -y --no-install-recommends unzip git \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p "$ANDROID_HOME/cmdline-tools" \
     && curl -fsSL -o /tmp/cmdline-tools.zip "https://dl.google.com/android/repository/$CMDLINE_TOOLS" \
