@@ -11,6 +11,13 @@ if [ $# -lt 1 ] || [ $# -gt 2 ]; then
     exit 2
 fi
 
+if ! command -v apksigcopier > /dev/null; then
+    echo "apksigcopier no está instalado o no está en el PATH." >&2
+    echo "Instálalo con: sudo apt install pipx && pipx install apksigcopier && pipx ensurepath" >&2
+    echo "Después abre una terminal nueva para que entre en el PATH." >&2
+    exit 1
+fi
+
 raiz="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 firmado="$(realpath "$1")"
 referencia="${2:-HEAD}"
