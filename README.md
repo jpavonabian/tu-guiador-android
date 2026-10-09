@@ -67,8 +67,7 @@ Si cambias una dependencia o un plugin, ejecuta `scripts/regenerar-verificacion.
 La clave de firma nunca entra en el repo ni en la imagen. `build.gradle.kts` no tiene `signingConfigs`: se compila sin firmar y se firma después. Compila siempre desde un tag.
 
 1. Sube `versionCode` y `versionName` en `app/build.gradle.kts` y añade `fastlane/metadata/android/{es-ES,en-US}/changelogs/<versionCode>.txt`. Haz commit.
-2. Crea el tag y súbelo. Un tag publicado no se mueve.
-   `git tag -a v1.1 -m "v1.1" && git push origin main v1.1`
+2. Crea el tag solo en local, sin subirlo todavía: `git tag -a v1.1 -m "v1.1"`. Mientras no esté publicado puedes borrarlo y recrearlo (`git tag -d v1.1`) si hay que corregir algo. Los scripts leen el tag de tu repositorio local.
 3. Comprueba que el build es reproducible con `scripts/verificar-reproducible.sh v1.1`. Si los APK difieren, no sigas.
 4. Crea la clave, solo la primera vez: `scripts/crear-clave.sh ~/claves/tuguiador.jks`. Es RSA 4096 con validez de 10000 días, y tiene que quedar fuera del repo. Haz copia de seguridad: sin ella no podrás actualizar la app ya instalada, ni en el móvil ni en F-Droid. Si F-Droid firma con su propia clave, esta solo vale para tus APK.
 5. Compila y firma:
@@ -78,7 +77,8 @@ La clave de firma nunca entra en el repo ni en la imagen. `build.gradle.kts` no 
 6. Copia el APK firmado fuera de `build-reproducible/`:
    `cp build-reproducible/release/app-release.apk ~/release/tuguiador-1.1.apk`
 7. Verifica que sale de ese tag: `scripts/verificar-firmado.sh ~/release/tuguiador-1.1.apk v1.1`. Debe acabar con `VERIFICADO`.
-8. Publica el APK en la release del tag, con su `sha256sum`.
+8. Solo ahora, con todo verificado, sube el código y el tag: `git push origin main v1.1`. Un tag publicado no se mueve.
+9. Publica el APK en la release del tag, con su `sha256sum`.
 
 Para instalar el APK firmado en el móvil: `adb install -r ~/release/tuguiador-1.1.apk`. Si había una versión de depuración, desinstálala antes, porque la firma es distinta.
 
