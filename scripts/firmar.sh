@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Firma el APK sin firmar con apksigner (build-tools del contenedor). No se hace zipalign:
 # el APK de Gradle ya sale alineado, y alinear otra vez cambiaría el contenido y rompería la
-# comprobación con apksigcopier. Solo esquema v2/v3 (minSdk 29, no hace falta v1).
+# comprobación con apksigcopier. Por eso se pasa --alignment-preserved: sin él apksigner
+# recoloca las entradas del ZIP y el APK firmado deja de coincidir con la compilación de cero.
+# Solo esquema v2/v3 (minSdk 29, no hace falta v1).
 # El keystore se monta en solo lectura; la contraseña se pide aquí y no aparece en la línea de
 # comandos ni en el historial. Para no interactivo: KS_PASS en el entorno.
 # Requiere Docker. Uso: scripts/firmar.sh <keystore> <alias> [apk_sin_firmar] [apk_firmado]
@@ -48,6 +50,7 @@ docker run --rm \
         apksigner="$ANDROID_HOME/build-tools/36.0.0/apksigner"
         "$apksigner" sign \
             --ks /clave/keystore --ks-key-alias "$0" --ks-pass env:KS_PASS \
+            --alignment-preserved \
             --v1-signing-enabled false --v2-signing-enabled true --v3-signing-enabled true \
             --out "/salida/$1" /entrada/app.apk
         "$apksigner" verify --verbose --print-certs "/salida/$1"
