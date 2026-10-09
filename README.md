@@ -60,7 +60,7 @@ Los scripts de `scripts/` lanzan el contenedor ellos solos, no hay que arrancar 
 
 La carpeta `build-reproducible/` es salida generada y está en `.gitignore`. Los dos scripts de verificación la borran al empezar (`verificar-firmado.sh`, solo `build-reproducible/firmado/`), así que mueve fuera el APK firmado que quieras conservar.
 
-Si cambias una dependencia o un plugin, regenera `gradle/verification-metadata.xml` dentro del contenedor y no en Windows, para que incluya también los artefactos de Linux, como `aapt2`.
+Si cambias una dependencia o un plugin, ejecuta `scripts/regenerar-verificacion.sh`. Regenera `gradle/verification-metadata.xml` dentro del contenedor y no en Windows, para que incluya también los artefactos de Linux, como `aapt2`, y conserva las entradas que ya había. Revisa el diff antes de commitear.
 
 ## Sacar una release firmada y verificable
 
