@@ -27,7 +27,7 @@ docker run --rm \
         export GRADLE_USER_HOME=/tmp/gradle-home
         bash ./gradlew --no-daemon --no-build-cache --console=plain \
             --write-verification-metadata sha256 \
-            assembleDebug assembleRelease testDebugUnitTest lint
+            assembleDebug assembleRelease assembleDebugAndroidTest testDebugUnitTest lint
     ' || estado=$?
 # El contenedor corre como root: devuelve todo a tu usuario para poder borrar la copia temporal.
 docker run --rm -v "$trabajo":/build "$imagen" chown -R "$(id -u):$(id -g)" /build
