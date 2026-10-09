@@ -24,6 +24,9 @@ RUN apt-get update \
 # Versiones concretas: coinciden con compileSdk = 37 y buildToolsVersion de app/build.gradle.kts.
 RUN yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null \
     && "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
-        "platforms;android-37.0" "build-tools;36.0.0"
+        "platforms;android-37.0" "build-tools;36.0.0" \
+    # sdkmanager deja algunos archivos (apksigner) sin permiso de lectura/ejecución para otros usuarios,
+    # y firmar.sh corre el contenedor con el usuario del anfitrión.
+    && chmod -R a+rX "$ANDROID_HOME"
 
 WORKDIR /build
