@@ -11,7 +11,8 @@ referencia="${1:-HEAD}"
 salida="$raiz/build-reproducible"
 imagen=tu-guiador-build
 
-rm -rf "$salida"
+# Solo borra su propia salida: no toca build-reproducible/release (el APK sin firmar y el firmado).
+rm -rf "$salida/1" "$salida/2" "$salida/informe-diffoscope.txt"
 mkdir -p "$salida/1" "$salida/2"
 
 docker build -t "$imagen" "$raiz"

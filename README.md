@@ -58,7 +58,7 @@ Los scripts de `scripts/` lanzan el contenedor ellos solos, no hay que arrancar 
 - `verificar-firmado.sh <apk> [referencia]` compila de cero en un contenedor y compara el resultado con tu APK firmado usando `apksigcopier compare`. Si no coincide, guarda el informe en `build-reproducible/firmado/informe-diffoscope.txt`.
 - `compilar-release.sh` es el script interno que corre dentro del contenedor. Lo usan `compilar.sh` y los dos de verificación. No se ejecuta a mano: sin argumentos solo muestra cómo se usa.
 
-La carpeta `build-reproducible/` es salida generada y está en `.gitignore`. Los dos scripts de verificación la borran al empezar (`verificar-firmado.sh`, solo `build-reproducible/firmado/`), así que mueve fuera el APK firmado que quieras conservar.
+La carpeta `build-reproducible/` es salida generada y está en `.gitignore`. Cada script de verificación solo borra su propia salida al empezar: `verificar-reproducible.sh` las carpetas `1/` y `2/` y su informe, y `verificar-firmado.sh` la carpeta `firmado/`. `build-reproducible/release/` (el APK sin firmar y el firmado) lo reescriben solo `compilar.sh` y `firmar.sh`. Aun así, copia fuera el APK firmado que quieras conservar (paso 6 de la release).
 
 Si cambias una dependencia o un plugin, ejecuta `scripts/regenerar-verificacion.sh`. Regenera `gradle/verification-metadata.xml` dentro del contenedor y no en Windows, para que incluya también los artefactos de Linux, como `aapt2`, y conserva las entradas que ya había. Revisa el diff antes de commitear.
 
