@@ -47,6 +47,27 @@ Con cada fase nueva, la prueba de TalkBack es manual: activa TalkBack (Ajustes >
 - `INSTALL_FAILED_UPDATE_INCOMPATIBLE`: hay una versión firmada con otra clave. Desinstala la app del móvil y reinstala.
 - Licencias del SDK sin aceptar: Studio > Settings > Languages & Frameworks > Android SDK, o `sdkmanager --licenses`.
 
+## Build reproducible
+
+El APK de release se puede reproducir byte a byte a partir del código fuente. La firma se hace fuera del repositorio y no forma parte de esta comprobación.
+
+Entorno fijado en `Dockerfile`: imagen `eclipse-temurin` 21.0.9+10 por digest, herramientas de línea de comandos del SDK 23.0 con hash, `platforms;android-37.0` y `build-tools;36.0.0`. Gradle 9.8.0 se descarga con `distributionSha256Sum`, y las dependencias se verifican con `gradle/verification-metadata.xml`. El APK no incluye el bloque de dependencias ni la información de control de versiones.
+
+Requisitos: Linux o WSL con Docker. Para el segundo script, `apksigcopier` (`pip install apksigcopier`). Si hay diferencias hace falta `diffoscope` instalado (en Debian/Ubuntu: `sudo apt install diffoscope`).
+
+Solo se compila lo versionado: el código sale de una referencia de git (commit o tag) con `git archive`, no del árbol de trabajo. Los cambios sin commit no se compilan. Cada compilación escribe también `commit.txt` con el hash compilado.
+
+1. Comprobar que dos compilaciones limpias dan el mismo APK:
+   `scripts/verificar-reproducible.sh [referencia_git]` (por defecto `HEAD`)
+   Compila dos veces en contenedores nuevos y con entornos distintos (ruta de trabajo, zona horaria, umask, hostname y fecha adelantada 30 días en la segunda), y compara los APK. Si difieren, guarda el informe de diffoscope en texto en `build-reproducible/informe-diffoscope.txt`.
+2. Comprobar un APK firmado por ti contra una compilación desde cero:
+   `scripts/verificar-firmado.sh ruta/al/app-release.apk [referencia_git]`
+   Usa `apksigcopier compare`. Si no coincide, guarda el informe en `build-reproducible/firmado/informe-diffoscope.txt`.
+
+La carpeta `build-reproducible/` es salida generada y está en `.gitignore`.
+
+Al cambiar una dependencia o un plugin, regenera `gradle/verification-metadata.xml` dentro del contenedor (no en Windows), para incluir también los artefactos de Linux, como `aapt2`.
+
 ## Reglas del proyecto
 
 - Sin servicios de Google (Play Services, Firebase, ML Kit), sin analítica, publicidad ni informes de errores, y sin permiso `INTERNET`. Se publicará en F-Droid.
