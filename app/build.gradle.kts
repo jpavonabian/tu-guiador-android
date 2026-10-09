@@ -7,6 +7,13 @@ plugins {
 android {
     namespace = "es.jesuspavonabian.tuguiador"
     compileSdk = 37
+    buildToolsVersion = "36.0.0"
+
+    // Build reproducible: sin bloque de dependencias ni información de control de versiones en el APK.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
 
     defaultConfig {
         applicationId = "es.jesuspavonabian.tuguiador"
@@ -20,6 +27,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            vcsInfo.include = false
         }
     }
 
