@@ -53,7 +53,16 @@ El APK de release se puede reproducir byte a byte a partir del código fuente. L
 
 Entorno fijado en `Dockerfile`: imagen `eclipse-temurin` 21.0.9+10 por digest, herramientas de línea de comandos del SDK 23.0 con hash, `platforms;android-37.0` y `build-tools;36.0.0`. Gradle 9.8.0 se descarga con `distributionSha256Sum`, y las dependencias se verifican con `gradle/verification-metadata.xml`. El APK no incluye el bloque de dependencias ni la información de control de versiones.
 
-Requisitos: Linux o WSL con Docker. Para el segundo script, `apksigcopier` (`pip install apksigcopier`). Si hay diferencias hace falta `diffoscope` instalado (en Debian/Ubuntu: `sudo apt install diffoscope`).
+Requisitos: Linux o WSL con Docker. Para `verificar-firmado.sh`, `apksigcopier` (`pip install apksigcopier`) en tu máquina. Si hay diferencias hace falta `diffoscope` instalado (en Debian/Ubuntu: `sudo apt install diffoscope`).
+
+Los scripts de `scripts/` lanzan el contenedor por su cuenta: no hay que arrancar nada antes. Cada uno ejecuta `docker build -t tu-guiador-build .` (la primera vez construye la imagen; después Docker reutiliza la caché mientras no cambie el `Dockerfile`) y `docker run --rm`, así que el contenedor se borra al terminar. Qué hace cada uno:
+
+- `compilar.sh [referencia]`: compila el release sin firmar en un contenedor. Deja `app-release-unsigned.apk` y `commit.txt` en `build-reproducible/release/`.
+- `crear-clave.sh <ruta> [alias]`: crea un keystore con el `keytool` del contenedor. Es interactivo (pide contraseñas y datos del certificado) y se niega a escribir dentro del repo o a sobrescribir un archivo existente.
+- `firmar.sh <keystore> <alias>`: firma el APK sin firmar con `apksigner` del contenedor, con el keystore montado en solo lectura, y verifica la firma. Deja `app-release.apk`.
+- `verificar-reproducible.sh [referencia]`: compila dos veces en dos contenedores con entornos distintos y compara los APK en tu máquina.
+- `verificar-firmado.sh <apk> [referencia]`: compila de cero en un contenedor y compara con tu APK firmado usando `apksigcopier` y, si difieren, `diffoscope`, ambos en tu máquina.
+- `compilar-release.sh`: es el script interno que corre dentro del contenedor y que usan `compilar.sh` y los dos de verificación. No se ejecuta a mano: sin argumentos solo muestra su uso.
 
 Solo se compila lo versionado: el código sale de una referencia de git (commit o tag) con `git archive`, no del árbol de trabajo. Los cambios sin commit no se compilan. Cada compilación escribe también `commit.txt` con el hash compilado.
 
