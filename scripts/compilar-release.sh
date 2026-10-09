@@ -9,6 +9,12 @@
 #   HOST_UID, HOST_GID propietario con el que quedan los archivos de salida.
 set -euo pipefail
 
+if [ $# -ne 4 ]; then
+    echo "Uso: $0 <repositorio_solo_lectura> <referencia> <carpeta_de_trabajo> <carpeta_salida>" >&2
+    echo "Este script corre dentro del contenedor. Para compilar desde tu máquina usa scripts/compilar.sh." >&2
+    exit 2
+fi
+
 repositorio="$1"
 referencia="$2"
 trabajo="$3"
