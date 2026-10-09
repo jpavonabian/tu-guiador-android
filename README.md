@@ -85,7 +85,24 @@ Notas:
 - `verificar-reproducible.sh` y `verificar-firmado.sh` borran `build-reproducible/` (o `build-reproducible/firmado/`) al empezar. Mueve fuera el APK firmado que quieras conservar.
 - Antes de una release sube `versionCode` y `versionName` en `app/build.gradle.kts` y añade `fastlane/metadata/android/*/changelogs/<versionCode>.txt`.
 - Instalar el APK firmado en el móvil: `adb install -r build-reproducible/release/app-release.apk`. Si había una versión de depuración, desinstálala antes (firma distinta).
-- Los scripts se escribieron sin poder ejecutarlos (sin Docker en la máquina de desarrollo): primera ejecución, revisa la salida.
+
+## Sacar una release verificable
+
+Flujo completo, desde `main` y con todo commiteado. Compilas siempre desde un tag, no desde el árbol de trabajo.
+
+1. Sube `versionCode` y `versionName` en `app/build.gradle.kts` y añade `fastlane/metadata/android/{es-ES,en-US}/changelogs/<versionCode>.txt`. Haz commit.
+2. Crea el tag y súbelo (un tag publicado no se mueve):
+   `git tag -a v1.1 -m "v1.1" && git push origin main v1.1`
+3. Comprueba que el build es reproducible: `scripts/verificar-reproducible.sh v1.1`. No sigas si los APK difieren.
+4. Compila y firma:
+   `scripts/compilar.sh v1.1`
+   `scripts/firmar.sh ~/claves/tuguiador.jks tuguiador`
+5. Copia el APK firmado fuera de `build-reproducible/` (los scripts de verificación la borran):
+   `cp build-reproducible/release/app-release.apk ~/release/tuguiador-1.1.apk`
+6. Verifica que el firmado sale de ese tag: `scripts/verificar-firmado.sh ~/release/tuguiador-1.1.apk v1.1`. Debe acabar con `VERIFICADO`.
+7. Publica el APK en la release del tag, con su `sha256sum`.
+
+Cualquiera con Docker y `apksigcopier` puede repetir el paso 6 con el tag y tu APK, y comprobar que corresponde al código fuente. Depende de que el entorno fijado en el `Dockerfile` (imagen por digest, SDK con hash) siga disponible.
 
 ## Reglas del proyecto
 
