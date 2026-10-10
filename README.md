@@ -56,6 +56,8 @@ Los scripts de `scripts/` lanzan el contenedor ellos solos, no hay que arrancar 
 - `firmar.sh <keystore> <alias>` firma el APK sin firmar con el `apksigner` del contenedor, con el keystore montado en solo lectura, y verifica la firma. Deja `app-release.apk`.
 - `verificar-reproducible.sh [referencia]` compila dos veces en dos contenedores con entornos distintos (ruta de trabajo, zona horaria, umask y hostname) y compara los APK en tu máquina. Si difieren, guarda el informe de diffoscope en `build-reproducible/informe-diffoscope.txt`.
 - `verificar-firmado.sh <apk> [referencia]` compila de cero en un contenedor y compara el resultado con tu APK firmado usando `apksigcopier compare`. Si no coincide, guarda el informe en `build-reproducible/firmado/informe-diffoscope.txt`.
+- `subir-version.sh [versionName] [versionCode]` cambia `versionName` y `versionCode` en `app/build.gradle.kts` y crea los changelogs de fastlane (es-ES y en-US). Solo toca esas dos líneas, exige que ambos valores sean mayores que los actuales y no hace commit. Hay que estar en una rama que no sea `main`.
+- `release.sh [--solo-local] [--desde-cero] <versionName>` encadena los pasos 2 a 9 de la release (ver más abajo). Se ejecuta desde `main`.
 - `compilar-release.sh` es el script interno que corre dentro del contenedor. Lo usan `compilar.sh` y los dos de verificación. No se ejecuta a mano: sin argumentos solo muestra cómo se usa.
 
 La carpeta `build-reproducible/` es salida generada y está en `.gitignore`. Cada script de verificación solo borra su propia salida al empezar: `verificar-reproducible.sh` las carpetas `1/` y `2/` y su informe, y `verificar-firmado.sh` la carpeta `firmado/`. `build-reproducible/release/` (el APK sin firmar y el firmado) lo reescriben solo `compilar.sh` y `firmar.sh`. Aun así, copia fuera el APK firmado que quieras conservar (paso 6 de la release).
@@ -65,6 +67,8 @@ Si cambias una dependencia o un plugin, ejecuta `scripts/regenerar-verificacion.
 ## Sacar una release firmada y verificable
 
 La clave de firma nunca entra en el repo ni en la imagen. `build.gradle.kts` no tiene `signingConfigs`: se compila sin firmar y se firma después. Compila siempre desde un tag.
+
+**Atajo con scripts.** El paso 1 se hace con `scripts/subir-version.sh <versionName> <versionCode>` (en una rama; revisa el diff, haz commit y merge a `main`). Los pasos 2 a 9 con GitHub los hace `scripts/release.sh <versionName>` desde `main`: comprueba que todo está en orden antes de empezar, pide la contraseña del keystore una vez y solo pide confirmación antes de subir a `origin` y antes de crear la release. Nunca se salta la comprobación de reproducibilidad ni borra el tag local. Si falla, vuelve a lanzar el mismo comando y retoma donde se quedó (`--desde-cero` descarta el progreso). Con `--solo-local` llega hasta el paso 7 sin tocar la red, para ensayar; el tag local lo borras tú a mano (`git tag -d v1.1`). Variables opcionales: `KEYSTORE` (por defecto `~/claves/tuguiador.jks`), `ALIAS` (`tuguiador`) y `CARPETA_RELEASE` (`~/release`). GitLab no está incluido. Los pasos de abajo explican lo que hace por dentro.
 
 1. Sube `versionCode` y `versionName` en `app/build.gradle.kts` y añade `fastlane/metadata/android/{es-ES,en-US}/changelogs/<versionCode>.txt`. Haz commit.
 2. Crea el tag solo en local, sin subirlo todavía: `git tag -a v1.1 -m "v1.1"`. Mientras no esté publicado puedes borrarlo y recrearlo (`git tag -d v1.1`) si hay que corregir algo. Los scripts leen el tag de tu repositorio local.
