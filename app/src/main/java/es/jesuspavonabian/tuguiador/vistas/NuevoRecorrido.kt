@@ -67,6 +67,8 @@ internal fun FormularioRecorrido(
     var pasos by rememberSaveable { mutableStateOf<List<String>>(ArrayList(inicial?.pasos ?: emptyList())) }
     var confirmarDescartar by rememberSaveable { mutableStateOf(false) }
     var pasoAEnfocar by remember { mutableStateOf<Int?>(null) }
+    // Un segundo toque en Guardar no debe guardar otra vez (duplicaría el recorrido).
+    var guardado by remember { mutableStateOf(false) }
     val botonAnadirPaso = remember { FocusRequester() }
 
     val hayCambios = nombre != (inicial?.nombre ?: "") ||
@@ -154,7 +156,12 @@ internal fun FormularioRecorrido(
                 Text(stringResource(R.string.anadir_paso))
             }
             Button(
-                onClick = { onGuardar(nombre, descripcion, pasos) },
+                onClick = {
+                    if (!guardado) {
+                        guardado = true
+                        onGuardar(nombre, descripcion, pasos)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(textoGuardar)

@@ -12,6 +12,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.lifecycle.viewmodel.initializer
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,10 +45,10 @@ class MainActivity : ComponentActivity() {
                                 onEditar = { navegador.navigate("editar/${it.id}") },
                             )
                         }
-                        composable("nuevo") {
+                        composable("nuevo") { entrada ->
                             NuevoRecorrido(
                                 controlador = controlador,
-                                onCerrar = { navegador.popBackStack() },
+                                onCerrar = { navegador.salirDe(entrada) },
                             )
                         }
                         composable(
@@ -56,7 +58,7 @@ class MainActivity : ComponentActivity() {
                             EditarRecorrido(
                                 controlador = controlador,
                                 id = entrada.arguments!!.getInt("id"),
-                                onCerrar = { navegador.popBackStack() },
+                                onCerrar = { navegador.salirDe(entrada) },
                             )
                         }
                         composable(
@@ -66,7 +68,7 @@ class MainActivity : ComponentActivity() {
                             RecorridoDetalles(
                                 controlador = controlador,
                                 id = entrada.arguments!!.getInt("id"),
-                                onAtras = { navegador.popBackStack() },
+                                onAtras = { navegador.salirDe(entrada) },
                             )
                         }
                     }
@@ -74,4 +76,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+// Un segundo toque (o una segunda llamada) sobre una pantalla que ya se está cerrando no debe
+// sacar también la pantalla de debajo: dejaría la pila vacía y la app en blanco.
+private fun NavController.salirDe(entrada: NavBackStackEntry) {
+    if (currentBackStackEntry?.id == entrada.id) popBackStack()
 }
