@@ -9,7 +9,7 @@
 # comando y retoma donde se quedó (si HEAD sigue igual). --desde-cero lo descarta.
 # Requiere Docker, apksigcopier y gh (gh solo si no usas --solo-local).
 # Uso: scripts/release.sh [--solo-local] [--desde-cero] <versionName>
-# Variables: KEYSTORE (~/claves/tuguiador.jks), ALIAS (tuguiador), CARPETA_RELEASE (~/release),
+# Variables: KEYSTORE (~/tu-guiador.p12), ALIAS (tu-guiador), CARPETA_RELEASE (~/release),
 #            KS_PASS (contraseña del keystore; si falta, se pide una vez)
 # --solo-local: llega hasta verificar el firmado y para, sin tocar la red.
 set -euo pipefail
@@ -35,8 +35,8 @@ raiz="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 scripts="$raiz/scripts"
 gradle="$raiz/app/build.gradle.kts"
 tag="v$version"
-keystore="${KEYSTORE:-$HOME/claves/tuguiador.jks}"
-alias_="${ALIAS:-tuguiador}"
+keystore="${KEYSTORE:-$HOME/tu-guiador.p12}"
+alias_="${ALIAS:-tu-guiador}"
 carpeta_release="${CARPETA_RELEASE:-$HOME/release}"
 estado="$raiz/build-reproducible/.release-estado"
 sin_firmar="$raiz/build-reproducible/release/app-release-unsigned.apk"
