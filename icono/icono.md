@@ -24,7 +24,7 @@ No hay PNG ni `.webp` por densidad: con `minSdk 29` todos los móviles usan el i
 ## Geometría (viewBox 0 0 108 108)
 
 - **Zona segura:** círculo de radio 33 centrado en (54, 54), es decir, los 66 dp centrales. Android nunca recorta ahí. Todo el dibujo está dentro (la ruta toca el borde pero no lo cruza).
-- **Ruta:** `M36 76 C46 67 58 85 72 75`, trazo blanco de 6, extremos redondeados.
+- **Ruta:** `M36 77 C46 63 60 89 72 73`, trazo blanco de 6, extremos redondeados.
 - **Marcador:** `M54 66 C54 66 40 52 40 42 A14 14 0 0 1 68 42 C68 52 54 66 54 66 Z`, con un agujero circular de radio 5 en (54, 42) (regla `evenodd`).
 - **Colores:** blanco `#FFFFFF` y azul `#0B57D0`. Contraste blanco sobre ese azul: unos 6,4:1.
 - Una sola tinta en el primer plano, así que sirve tal cual como capa monocromo (iconos con tema de Android 13+).
@@ -67,9 +67,15 @@ Si se quiere que el icono de Android siga al de iOS:
 - Lo que no se puede hacer es recortar el PNG de iOS: lleva ya la forma del icono de iOS y Android lo recortaría otra vez.
 - Si el icono de iOS se convierte en un vector limpio o en un PNG de 1024 px con el primer plano separado del fondo, ese archivo sirve como nuevo `primer_plano` para Image Asset Studio.
 
-## Icono de 512 px para F-Droid (pendiente, fase 6)
+## Icono de 512 px para F-Droid
 
-F-Droid usa un `icon.png` en los metadatos de fastlane (por ejemplo `fastlane/metadata/android/es-ES/images/icon.png`). Pendiente de generar: el primer plano blanco sobre el fondo azul, a 512×512 y sin transparencia. Se puede renderizar con el mismo método de Edge sin interfaz que se usó para comprobar el diseño.
+F-Droid usa un `icon.png` en los metadatos de fastlane: `fastlane/metadata/android/es-ES/images/icon.png` y `en-US/images/icon.png` (el mismo archivo en los dos). Es el primer plano blanco sobre el fondo azul `#0B57D0`, a 512×512 y sin transparencia (PNG RGB). **Hay que regenerarlo cada vez que cambie `primer_plano.svg` o el azul del fondo.**
+
+Cómo se genera: una página HTML con `body` de fondo `#0B57D0` y el SVG dentro con `width="512" height="512"` (mismo `viewBox`), capturada con Edge sin interfaz y sin escala de pantalla:
+
+```
+msedge --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --screenshot=icon.png --window-size=512,512 file:///ruta/i.html
+```
 
 ## Cómo previsualizar
 
