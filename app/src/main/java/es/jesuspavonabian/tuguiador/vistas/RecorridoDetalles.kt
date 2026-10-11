@@ -35,12 +35,14 @@ fun RecorridoDetalles(
     onAtras: () -> Unit,
 ) {
     val recorridos by controlador.recorridos.collectAsStateWithLifecycle()
+    val cargado by controlador.cargado.collectAsStateWithLifecycle()
     val recorrido = recorridos.firstOrNull { it.id == id }
     val contexto = LocalContext.current
 
-    // Si el recorrido ya no existe, se vuelve a la lista.
-    LaunchedEffect(recorrido == null) {
-        if (recorrido == null) onAtras()
+    // Si el recorrido ya no existe, se vuelve a la lista. Antes de que termine la carga
+    // del archivo no se sabe, así que no se hace nada.
+    LaunchedEffect(cargado, recorrido == null) {
+        if (cargado && recorrido == null) onAtras()
     }
     if (recorrido == null) return
 
