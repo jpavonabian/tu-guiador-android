@@ -25,6 +25,11 @@ class Controlador(
     private val _recorridos = MutableStateFlow<List<Recorrido>>(emptyList())
     val recorridos: StateFlow<List<Recorrido>> = _recorridos
 
+    // Pasa a true cuando termina la carga inicial. Hasta entonces la lista vacía no significa
+    // que un recorrido no exista (p. ej. al restaurar la app tras morir el proceso).
+    private val _cargado = MutableStateFlow(false)
+    val cargado: StateFlow<Boolean> = _cargado
+
     private val ambito = CoroutineScope(SupervisorJob() + despachador)
 
     // Un solo cambio a la vez, y la carga va siempre la primera (el Mutex es justo):
@@ -39,6 +44,7 @@ class Controlador(
                     // Lista vacía sin tocar el archivo hasta que el usuario cambie algo.
                     Almacen.Resultado.Ilegible -> _recorridos.value = emptyList()
                 }
+                _cargado.value = true
             }
         }
     }

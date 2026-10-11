@@ -5,8 +5,10 @@ package es.jesuspavonabian.tuguiador.vistas
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.jesuspavonabian.tuguiador.Controlador
 import es.jesuspavonabian.tuguiador.R
 import es.jesuspavonabian.tuguiador.Recorrido
@@ -17,11 +19,14 @@ fun EditarRecorrido(
     id: Int,
     onCerrar: () -> Unit,
 ) {
-    // Se lee una sola vez: guardar reindexa los identificadores.
-    val original = remember(id) { controlador.obtenerRecorridoPorID(id) }
+    val cargado by controlador.cargado.collectAsStateWithLifecycle()
 
-    LaunchedEffect(original == null) {
-        if (original == null) onCerrar()
+    // Se lee una sola vez, ya cargado el archivo: guardar reindexa los identificadores.
+    val original = remember(id, cargado) { controlador.obtenerRecorridoPorID(id) }
+
+    // Mientras no se haya cargado el archivo, no se sabe si el recorrido existe.
+    LaunchedEffect(cargado, original == null) {
+        if (cargado && original == null) onCerrar()
     }
     if (original == null) return
 
