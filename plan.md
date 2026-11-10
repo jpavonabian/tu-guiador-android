@@ -114,11 +114,11 @@ Sin Hilt/Koin, Room/DataStore, Retrofit, Coil, Firebase, analítica ni anuncios.
 
 - Fases 0 a 4: hechas. `assembleDebug testDebugUnitTest lint` pasa sin avisos (23 tests unitarios). La compatibilidad de compartir recorridos entre iOS y Android está comprobada con la app real.
 - Fase 5: escritos los tests de semántica (`AccesibilidadTest`, 10 tests). Falta ejecutarlos en un dispositivo (`connectedDebugAndroidTest`) y hacer la auditoría manual con TalkBack real y el Accessibility Scanner. Se está probando con un APK de depuración entre unos testers.
-- Fase 6: ver abajo. Hecho: licencia, icono, metadatos de F-Droid. Falta: repo público, versión, APK de release y ficha en `fdroiddata`.
+- Fase 6: ver abajo. Hecho: licencia, icono, metadatos de F-Droid, repo público, versión 1.1 con etiqueta `v1.1`. Falta: comprobar la compilación como F-Droid y la ficha en `fdroiddata`.
 - Compilación: AGP 9.4.1, Kotlin 2.4.20, Gradle 9.8.0, `compileSdk` y `targetSdk` 37, `minSdk` 29. Con `targetSdk` 37 hay que repetir las pruebas manuales en el móvil.
 - Decisiones abiertas:
   - Como en iOS, un fallo al guardar no se notifica al usuario. Pendiente de una fase de corrección de errores.
-  - `versionName`: `1.0` o `0.1` hasta terminar las pruebas (hoy `1.0` / `versionCode` 1).
+  - `versionName`: hoy `1.1` / `versionCode` 2.
   - Aviso de Gradle `Configuration.setVisible` (de un plugin, no del proyecto): se resuelve al actualizar el plugin.
 
 ## Fases
@@ -165,10 +165,11 @@ Sin Hilt/Koin, Room/DataStore, Retrofit, Coil, Firebase, analítica ni anuncios.
 F-Droid compila el código fuente público y firma el APK con su propia clave.
 - Hecho: licencia GPL-3.0-or-later (`LICENSE` y cabecera SPDX en cada `.kt`); icono adaptativo propio, no derivado del PNG de iOS (ver `icono/icono.md`).
 - Hecho: metadatos fastlane en `fastlane/metadata/android/es-ES` y `en-US`: título, descripción corta (80 caracteres como máximo), descripción larga, novedades (`changelogs/1.txt`, que se enlaza con el `versionCode`) e `images/icon.png` de 512 px sin transparencia. Opcional, sin hacer: capturas en `images/phoneScreenshots/`.
-- Hecho: repositorio en GitLab (`gitlab.com/jpavonabian/tu-guiador-android`), con `main` subido. Falta hacerlo **público**.
-- Falta: confirmar `versionCode`/`versionName` y crear una etiqueta git por versión (`v1.0`…), que es lo que F-Droid compila. Si cambia el `versionCode`, se renombra `changelogs/1.txt`.
-- Comprobar el ajuste de F-Droid sobre el bloque de metadatos de dependencias (`dependenciesInfo`) del APK de release, y que la compilación sale igual desde el código fuente.
-- Ficha de la app en el repositorio `fdroiddata` de F-Droid (merge request).
+- Hecho: repositorio **público** en GitHub (`github.com/jpavonabian/tu-guiador-android`, remoto `origin`) y copia en GitLab (`gitlab.com/jpavonabian/tu-guiador-android`, remoto `upstream`).
+- Hecho: versión 1.1 (`versionCode` 2) y etiqueta git `v1.1` subida a ambos remotos; es lo que compila F-Droid. En cada versión nueva: subir `versionCode`/`versionName` (`scripts/subir-version.sh`), añadir `changelogs/<versionCode>.txt` en es-ES y en-US, y crear la etiqueta `vX.Y`.
+- Hecho: `dependenciesInfo` y `vcsInfo` desactivados en el APK de release, `gradle/verification-metadata.xml` y scripts de compilación reproducible (`scripts/`).
+- Falta: comprobar que F-Droid compila igual desde el código fuente (`fdroid lint` y `fdroid build` en local, o el pipeline del merge request), sobre todo sin red y con `keepDebugSymbols`.
+- Falta: ficha de la app en el repositorio `fdroiddata` de F-Droid (merge request con `metadata/es.jesuspavonabian.tuguiador.yml`).
 - Firma propia solo para los APK que se repartan a mano (el keystore **nunca** al repo). Cambiar de firma obliga a desinstalar, así que se exportan los datos antes.
 - Pruebas internas cerradas con usuarios ciegos antes de producción.
 
